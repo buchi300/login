@@ -68,7 +68,7 @@
       $this->middlename = htmlspecialchars(strip_tags($this->middlename));
       $this->lastname = htmlspecialchars(strip_tags($this->lastname));
       $this->email = htmlspecialchars(strip_tags($this->email));
-      $this->password = htmlspecialchars(strip_tags($this->password));
+      $this->password = password_hash($this->password, PASSWORD_DEFAULT);
       $this->phone = htmlspecialchars(strip_tags($this->phone));
       $this->dob = htmlspecialchars(strip_tags($this->dob));
 
@@ -147,7 +147,7 @@
     // Create query
     $query = 'SELECT * from
           ' . $this->table . '
-      WHERE email = :email and password = :password
+      WHERE email = :email 
       LIMIT 0,1';
 
       //Prepare statement
@@ -155,12 +155,12 @@
 
       
       // Execute query
-      $stmt->execute(['email' =>$this->email, 'password'=>$this->password]);
+      $stmt->execute(['email' =>$this->email]);
 
       $row = $stmt->fetch(PDO::FETCH_ASSOC);
-
+      
       // set properties 
-      if ($row>0){
+      if ($row>0 && password_verify($this->password, $row['password'])){
       $this->id =$row['person_id']; 
       $this->firstname = $row['firstName'];
       $this->middlename =$row['middleName'];
